@@ -28,4 +28,4 @@ In this extension we are going to try invoke a function present in content scrip
 }
 ```
 background scripts run in the background and can react to events issued by browser or content scripts.
-Content scripts are able to run in the context of the page, that is they can access the DOM, `all_frames` will let script to be run in iframes as well.
+Content scripts are able to run in the context of the page, that is they can access the DOM, `all_frames` will let script to be run in iframes as well.cd

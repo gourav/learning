@@ -1,0 +1,24 @@
+{
+    "name": "Postman",
+    "description": "I pass message from content script to backaground page.",
+    "version": "0.0.0",
+    "manifest_version": 2,
+    "browser_action": {},
+    "background": {
+        "scripts": [
+            "./background-scripts/fourth.js"
+        ],
+        "persistent": false
+    },
+    "content_scripts": [
+        {
+            "matches": [ "<all_urls>" ],
+            "js": [ "./content-scripts/pass-message.js" ],
+            "run_at": "document_idle",
+            "all_frames": true
+        }
+    ],
+    "permissions": [
+        "activeTab"
+    ]
+}
