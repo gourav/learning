@@ -1,0 +1,13 @@
+{
+    "name": "Hello Execute",
+    "description": "This is a test as to how to execute a function when extension icon is cliked on browswer.",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "browser_action": {},
+    "background": {
+        "scripts": [
+            "./background-scripts/first.js"
+        ],
+        "persistent": false
+    }
+}

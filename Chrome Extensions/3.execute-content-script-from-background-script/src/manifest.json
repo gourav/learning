@@ -1,0 +1,24 @@
+{
+    "name": "Invoker",
+    "description": "This is an example on how to invoke content script from background script",
+    "version": "0.0.0",
+    "manifest_version": 2,
+    "browser_action": {},
+    "background": {
+        "scripts": [
+            "./background-scripts/first.js"
+        ],
+        "persistent": false
+    },
+    "content_scripts": [
+        {
+            "matches": [ "<all_urls>" ],
+            "js": [ "./content-scripts/doSomething.js" ],
+            "run_at": "document_idle",
+            "all_frames": true
+        }
+    ],
+    "permissions": [
+        "activeTab"
+    ]
+}
