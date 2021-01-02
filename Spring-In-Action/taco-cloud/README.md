@@ -126,3 +126,200 @@ that uses these error references to the order form template, as follows.
     th:if="${#fields.hasErrors('ccNumber')}"
     th:errors="*{ccNumber}">CC Num Error</span>”
 ```
+
+## `ModelAttribute`
+
+With `ModelAttribute` annotation, we can bind a method parameter or method return value to a named
+model attribute, which will be exposed to web view. Spring will call this method first before calling 
+the handler to ensure that model exists before request handling kicks in. It would then be available to all requests.
+
+It has two variants though:
+- When this annotation is used as class member.
+  ```java
+    @ModelAttribute("order")
+    public Order order() {
+        return new Order();
+    }
+    ```
+- When this annotation is used as method argument. Here it is expected from Spring to populate this from
+  the model (form values), if it is not present then instantiate.
+    ```java
+    @PostMapping
+    public String processDesign(@Valid Taco design, @ModelAttribute Order order, Errors formErrors) {
+
+        if (formErrors.hasErrors()) {
+            return "design";
+        }
+
+        /*
+         * Let's save the design.
+         */
+        Taco saved = this.tacos.save(design);
+        order.addDesign(saved);
+
+        log.info("Processing Design: " + design);
+        return "redirect:/orders/current";
+
+    }
+    ```
+
+## `SessionAttributes`
+With `SessionAttributes`, we grant a controller the ability to store a model into session / multiple
+requests. In this snippet, we allow `ModelAttribute` order to be saved across multiple requests as `order`
+is mentioned in both, `ModelAttribute` and `SessionAttributes`.
+
+```java
+@SessionAttributes("order")
+public class DesignTacoController {
+
+    private final IngredientRepository ingredients;
+    private final TacoRepository tacos;
+
+    @ModelAttribute("order")
+    public Order order() {
+        return new Order();
+    }
+
+    @ModelAttribute("taco")
+    public Taco taco() {
+        return new Taco();
+    }
+}
+```
+
+## Storing using `JdbcTemplate`
+
+Here is how we can use `JdbcTemplate` to store and read values.
+```java
+@Repository
+public class JdbcIngredientRepository implements IngredientRepository {
+
+    private JdbcTemplate template;
+
+    @Autowired
+    public JdbcIngredientRepository( JdbcTemplate template ) {
+        this.template = template;
+    }
+
+    @Override
+    public Iterable<Ingredient> findAll() {
+        return this.template.query( "select id, name, type from ingredient ",
+                this::mapRowToIngredient );
+    }
+
+    @Override
+    public Ingredient findOne(String id) {
+        return this.template.queryForObject( "select id, name, type from ingredient where id = ?",
+                this::mapRowToIngredient, id );
+    }
+
+    @Override
+    public Ingredient save(Ingredient ingredient) {
+        this.template.update( "insert into ingredient( id, name, type ) values( ?, ?, ? )",
+                ingredient.getId(),
+                ingredient.getName(),
+                ingredient.getType().toString()
+        );
+
+        return ingredient;
+    }
+
+    private Ingredient mapRowToIngredient( ResultSet resultSet, int rowNumber ) throws SQLException {
+        return new Ingredient(
+                resultSet.getString( "id" ),
+                resultSet.getString( "name" ),
+                Ingredient.Type.valueOf( resultSet.getString( "type" ))
+        );
+    }
+}
+```
+
+## Using `SimpleJdbcInsert` to insert data into database
+
+Here is an example that demonstrates how can we use `SimpleJdbcInsert` to insert values into database.
+`SimpleJdbcInsert` also comes up with various options that we can configure at the instantiation. However,
+one of the most basic forms require that we declare `generatedColumn` using `.usingGeneratedKeyColumns("id")` and
+create a map of column names and values pass it to execute as demonstrated.
+
+```java
+@Repository
+public class JdbcOrderRepository implements OrderRepository {
+
+  private final SimpleJdbcInsert orderInserter;
+  private final SimpleJdbcInsert tacoInOrderInserter;
+
+  @Autowired
+  public JdbcOrderRepository(JdbcTemplate template) {
+
+    orderInserter = new SimpleJdbcInsert(template)
+            .withTableName("Taco_Order")
+            .usingGeneratedKeyColumns("id");
+
+    tacoInOrderInserter = new SimpleJdbcInsert(template)
+            .withTableName("Taco_Order_Tacos");
+
+  }
+
+  private long saveOrderBasicDetails(Order order) {
+
+    Map<String, Object> columnToValuesMap = new HashMap<>();
+
+    columnToValuesMap.put("placedAt", order.getPlacedAt());
+    columnToValuesMap.put("deliveryName", order.getName());
+    columnToValuesMap.put("deliveryStreet", order.getStreet());
+    columnToValuesMap.put("deliveryCity", order.getCity());
+
+    columnToValuesMap.put("deliveryState", order.getState());
+    columnToValuesMap.put("deliveryZip", order.getZip());
+    columnToValuesMap.put("ccNumber", order.getCcNumber());
+    columnToValuesMap.put("ccExpiration", order.getCcExpiry());
+
+    columnToValuesMap.put("ccCvv", order.getCcCvv());
+
+    return this.orderInserter.executeAndReturnKey(columnToValuesMap)
+            .longValue();
+
+  }
+}
+```
+
+## Using `PreparedStatementCreator` to insert content into database
+
+To use `PreparedStatementCreator` we make use of `PreparedStatementCreatorFactory` that demands query that we will be 
+using to insert data as first argument and type of arguments as `List` in second.  Then using this factory instance,
+we create `PreparedStatementCreator` by invoking `newPreparedStatementCreator` on it by passing actual arguments as `List`.
+
+Once we have this `PreparedStatementCreator` instance, we can pass it directly to the `JdbcTemplate` to execute it.
+However, if we want to get generated `id` for the row to be returned, it is important to invoke
+`factory.setReturnGeneratedKeys( true )` otherwise it will return null.
+`
+
+```java
+@Repository
+public class JdbcTacoRepository implements TacoRepository {
+
+    private static final String INSERT_INTO_TACO = "insert into Taco( name, createdAt ) values ( ?, ? ) ";
+    private static final String INSERT_INTO_TACO_INGREDIENT = "insert into Taco_Ingredients( taco, ingredient ) values( ?, ? )";
+
+    private final JdbcTemplate template;
+
+    public JdbcTacoRepository( JdbcTemplate template ) {
+        this.template = template;
+    }
+
+    private long saveTacoBasicDetails( Taco taco ) {
+
+        taco.setCreatedAt( new Date() );
+        PreparedStatementCreatorFactory insertForTacoFactory = new PreparedStatementCreatorFactory( INSERT_INTO_TACO, Types.VARCHAR, Types.TIMESTAMP );
+        insertForTacoFactory.setReturnGeneratedKeys( true );
+
+        PreparedStatementCreator insertForTaco = insertForTacoFactory.newPreparedStatementCreator(Arrays.asList( taco.getName(), new Timestamp( taco.getCreatedAt().getTime() )));
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        this.template.update( insertForTaco, keyHolder );
+
+        return keyHolder.getKey().longValue();
+
+    }
+}
+```
