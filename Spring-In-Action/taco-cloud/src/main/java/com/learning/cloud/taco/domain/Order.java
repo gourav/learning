@@ -3,6 +3,7 @@ package com.learning.cloud.taco.domain;
 import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
 
+import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -11,8 +12,12 @@ import java.util.Date;
 import java.util.List;
 
 @Data
+@Entity
+@Table( name = "Taco_Order" )
 public class Order {
 
+    @Id
+    @GeneratedValue( strategy = GenerationType.SEQUENCE )
     private Long id;
 
     @NotBlank( message = "Name is required." )
@@ -41,10 +46,16 @@ public class Order {
 
     private Date placedAt;
 
+    @ManyToMany( targetEntity = Taco.class )
     private List<Taco> tacos = new ArrayList<>();
 
     public void addDesign( Taco taco ) {
         tacos.add( taco );
+    }
+
+    @PrePersist
+    public void setPlacedAtDateToNow() {
+        this.placedAt = new Date();
     }
 
 }

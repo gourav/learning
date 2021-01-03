@@ -323,3 +323,82 @@ public class JdbcTacoRepository implements TacoRepository {
     }
 }
 ```
+
+## Magic of Spring JPA
+
+With Spring JPA, Spring can write implementation of the interface methods itself if methods names are written properly.
+Let's see an example:
+
+```java
+public interface OrderRepository
+         extends CrudRepository<Order, Long> {
+
+  List<Order> findByDeliveryZip(String deliveryZip);
+    
+}
+```
+
+By default, Spring JPA provides implementation of different methods written in the `CrudRepository`, however, we can 
+also add new method definitions to allow Spring to generate code for us. In the given example, `findByDeliveryZip` asks
+Spring to generate method that would return Orders that were placed in a zip. 
+
+Spring Data repositories can use any of these operators:
+- `IsAfter, After, IsGreaterThan, GreaterThan`
+- `IsGreaterThanEqual, GreaterThanEqual`
+- `IsBefore, Before, IsLessThan, LessThan`
+- `IsLessThanEqual, LessThanEqual`
+- `IsBetween, Between`
+- `IsNull, Null`
+- `IsNotNull, NotNull`
+- `IsIn, In`
+- `IsNotIn, NotIn`
+- `IsStartingWith, StartingWith, StartsWith`
+- `IsEndingWith, EndingWith, EndsWith`
+- `IsContaining, Containing, Contains`
+- `IsLike, Like`
+- `IsNotLike, NotLike`
+- `IsTrue, True`
+- `IsFalse, False`
+- `Is, Equals`
+- `IsNot, Not`
+- `IgnoringCase, IgnoresCase`
+
+## JPA and Enum
+
+We can control the how an enum is read and stored from database.
+
+```java
+@Converter( autoApply = true )
+public class IngredientTypeConverter implements AttributeConverter<Ingredient.Type, String> {
+    @Override
+    public String convertToDatabaseColumn(Ingredient.Type attribute) {
+        if( attribute == null ) {
+            return null;
+        }
+
+        return attribute.toString();
+    }
+
+    @Override
+    public Ingredient.Type convertToEntityAttribute(String dbData) {
+
+        if( dbData == null ) {
+            return null;
+        }
+
+        return Stream.of( Ingredient.Type.values() )
+                .filter( type -> type.toString().equals( dbData ))
+                .findFirst()
+                .orElseThrow( IllegalAccessError::new );
+
+    }
+}
+```
+
+If this is not used, reading or storing problem may occur.
+
+## JPA and schema.sql or data.sql
+
+JPA by itself tries to create tables and it will try to convert camelcase column names into snake_case, which may be 
+causing error. To handle this, you will have to chuck out schema.sql completely and let JPA do its work otherwise you
+are anyway going to battle with insert queries error.

@@ -1,15 +1,30 @@
 package com.learning.cloud.taco.domain;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-@Data
-@RequiredArgsConstructor
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Getter
+@Setter
+@Entity
 public class Ingredient {
 
-    private final String id;
-    private final String name;
-    private final Type type;
+    @Id
+    private String id;
+    private String name;
+
+    private Type type;
+
+    public Ingredient() {
+
+    }
+
+    public Ingredient( String id, String name, Type type ) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
 
     public enum Type {
         WRAP, PROTEIN, VEGGIES, CHEESE, SAUCE

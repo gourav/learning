@@ -1,4 +1,4 @@
-package com.learning.cloud.taco.repository.impl;
+package com.learning.cloud.taco.repository.impl.jdbc;
 
 import com.learning.cloud.taco.domain.Order;
 import com.learning.cloud.taco.domain.Taco;
@@ -6,14 +6,12 @@ import com.learning.cloud.taco.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Repository
 public class JdbcOrderRepository implements OrderRepository {
 
     private final SimpleJdbcInsert orderInserter;

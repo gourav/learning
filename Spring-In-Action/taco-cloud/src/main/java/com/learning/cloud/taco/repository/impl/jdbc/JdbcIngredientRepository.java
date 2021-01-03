@@ -1,15 +1,13 @@
-package com.learning.cloud.taco.repository.impl;
+package com.learning.cloud.taco.repository.impl.jdbc;
 
 import com.learning.cloud.taco.domain.Ingredient;
 import com.learning.cloud.taco.repository.IngredientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Repository
 public class JdbcIngredientRepository implements IngredientRepository {
 
     private JdbcTemplate template;

@@ -3,8 +3,8 @@ package com.learning.cloud.taco.controller;
 import com.learning.cloud.taco.domain.Ingredient;
 import com.learning.cloud.taco.domain.Order;
 import com.learning.cloud.taco.domain.Taco;
-import com.learning.cloud.taco.repository.IngredientRepository;
-import com.learning.cloud.taco.repository.TacoRepository;
+import com.learning.cloud.taco.repository.impl.jpa.SmartIngredientRepository;
+import com.learning.cloud.taco.repository.impl.jpa.SmartTacoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @SessionAttributes("order")
 public class DesignTacoController {
 
-    private final IngredientRepository ingredients;
-    private final TacoRepository tacos;
+    private final SmartIngredientRepository ingredients;
+    private final SmartTacoRepository tacos;
 
     @ModelAttribute("order")
     public Order order() {
@@ -37,7 +37,7 @@ public class DesignTacoController {
     }
 
     @Autowired
-    public DesignTacoController(IngredientRepository ingredients, TacoRepository tacos) {
+    public DesignTacoController(SmartIngredientRepository ingredients, SmartTacoRepository tacos) {
 
         this.ingredients = ingredients;
         this.tacos = tacos;

@@ -1,7 +1,7 @@
 package com.learning.cloud.taco.controller;
 
 import com.learning.cloud.taco.domain.Order;
-import com.learning.cloud.taco.repository.OrderRepository;
+import com.learning.cloud.taco.repository.impl.jpa.SmartOrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,10 +21,10 @@ import javax.validation.Valid;
 @SessionAttributes( "order" )
 public class OrderController {
 
-    private final OrderRepository orders;
+    private final SmartOrderRepository orders;
 
     @Autowired
-    OrderController( OrderRepository orders ) {
+    OrderController( SmartOrderRepository orders ) {
         this.orders = orders;
     }
 
