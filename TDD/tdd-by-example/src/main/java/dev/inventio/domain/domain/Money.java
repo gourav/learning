@@ -5,10 +5,14 @@ public class Money {
   protected int amount;
 
   @Override
-  public boolean equals( Object presented ) {
+  public boolean equals(Object presented) {
 
-    Money money = (Money) presented;
-    return money.amount == amount;
+    if (this.getClass().equals(presented.getClass())) {
+      Money money = (Money) presented;
+      return money.amount == amount;
+    }
+
+    return false;
 
   }
 

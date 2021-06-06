@@ -58,4 +58,9 @@ public class MoneyTest {
     assertNotEquals(new Franc(5), new Franc(10));
   }
 
+  @Test
+  void given_FrancIs5AndDollarIs5_whenComparedAgainstEachOther_shouldReturnFalse() {
+    assertNotEquals(new Franc(5), new Dollar(5));
+  }
+
 }
