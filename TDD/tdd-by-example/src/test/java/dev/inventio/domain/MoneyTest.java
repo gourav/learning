@@ -113,5 +113,21 @@ public class MoneyTest {
 
   }
 
+  @Test
+  void givenFrenc2_whenConvertedIntoDollar_shouldBeDollar1() {
+
+    Bank bank = new Bank();
+    bank.addRate(Currency.FRENC, Currency.DOLLAR, 2);
+
+    Money result = bank.reduce(Money.franc(2), Currency.DOLLAR);
+    assertEquals(Money.dollar(1), result);
+
+  }
+
+  @Test
+  public void givenDollarCurrency_whenAskedForExchangeRateForDollar_shouldBe1() {
+    assertEquals(1, new Bank().rate(Currency.DOLLAR, Currency.DOLLAR));
+    assertEquals(1, new Bank().rate(Currency.FRENC, Currency.FRENC));
+  }
 
 }

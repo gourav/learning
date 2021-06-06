@@ -31,8 +31,8 @@ public class Money implements Expression {
   }
 
   @Override
-  public Money reduce(Currency currency) {
-    return this;
+  public Money reduce(Bank bank, Currency currency) {
+    return new Money(this.amount / bank.rate(this.currency, currency), currency);
   }
 
   @Override
