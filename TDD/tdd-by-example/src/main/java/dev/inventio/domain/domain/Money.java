@@ -1,6 +1,6 @@
 package dev.inventio.domain.domain;
 
-public abstract class Money {
+public class Money {
 
   protected int amount;
   protected String currency;
@@ -18,7 +18,9 @@ public abstract class Money {
     this.currency = currency;
   }
 
-  public abstract Money times(int times);
+  public Money times(int times) {
+    return new Money(this.amount * times, this.currency);
+  }
 
   public String currency() {
     return this.currency;
@@ -27,9 +29,9 @@ public abstract class Money {
   @Override
   public boolean equals(Object presented) {
 
-    if (this.getClass().equals(presented.getClass())) {
+    if (Money.class.isAssignableFrom(presented.getClass())) {
       Money money = (Money) presented;
-      return money.amount == amount;
+      return money.amount == amount && money.currency.equals(currency);
     }
 
     return false;

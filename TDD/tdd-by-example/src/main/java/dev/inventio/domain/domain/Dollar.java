@@ -6,12 +6,4 @@ class Dollar extends Money {
     super(amount, currency);
   }
 
-  public Money times(int times) {
-    return Money.dollar(this.amount * times);
-  }
-
-  @Override
-  public String currency() {
-    return currency;
-  }
 }
