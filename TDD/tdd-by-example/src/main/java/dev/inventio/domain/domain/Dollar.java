@@ -1,12 +1,12 @@
 package dev.inventio.domain.domain;
 
-public class Dollar extends Money{
+class Dollar extends Money{
 
-  public Dollar(int amount) {
+  Dollar(int amount) {
     this.amount = amount;
   }
 
-  public Dollar times(int times) {
+  public Money times(int times) {
     return new Dollar(this.amount * times);
   }
 
