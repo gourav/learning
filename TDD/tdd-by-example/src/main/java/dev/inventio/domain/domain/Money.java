@@ -1,6 +1,6 @@
 package dev.inventio.domain.domain;
 
-public class Money {
+public class Money implements Expression {
 
   protected int amount;
   protected String currency;
@@ -20,6 +20,10 @@ public class Money {
 
   public Money times(int times) {
     return new Money(this.amount * times, this.currency);
+  }
+
+  public Money plus(Money toAdd) {
+    return new Money(this.amount + toAdd.amount, this.currency);
   }
 
   public String currency() {

@@ -3,6 +3,8 @@ package dev.inventio.domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import dev.inventio.domain.domain.Bank;
+import dev.inventio.domain.domain.Expression;
 import dev.inventio.domain.domain.Money;
 
 import org.junit.jupiter.api.Test;
@@ -64,6 +66,19 @@ public class MoneyTest {
   @Test
   void given_Frac5_currency_shouldBeFrc() {
     assertEquals(Money.franc(5).currency(), "CHF");
+  }
+
+  @Test
+  void givenDollar5AndAnotherDollarFive_whenAdded_shouldBe10Dollars() {
+
+    Money fiveDollars = Money.dollar(5);
+    Expression expression = fiveDollars.plus(fiveDollars);
+
+    Bank bank = new Bank();
+    Money sum = bank.reduce(expression, "USD");
+
+    assertEquals(Money.dollar(10), sum);
+
   }
 
 }
