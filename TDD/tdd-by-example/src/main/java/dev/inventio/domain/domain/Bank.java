@@ -2,8 +2,8 @@ package dev.inventio.domain.domain;
 
 public class Bank {
 
-  public Money reduce(Expression expression, String currency) {
-    return Money.dollar(10);
+  public Money reduce(Expression expression, Currency currency) {
+    return expression.reduce(currency);
   }
 
 }

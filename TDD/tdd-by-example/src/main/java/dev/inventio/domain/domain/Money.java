@@ -3,17 +3,17 @@ package dev.inventio.domain.domain;
 public class Money implements Expression {
 
   protected int amount;
-  protected String currency;
+  protected Currency currency;
 
   public static Money dollar(int amount) {
-    return new Money(amount, "USD");
+    return new Money(amount, Currency.DOLLAR);
   }
 
   public static Money franc(int amount) {
-    return new Money(amount, "CHF");
+    return new Money(amount, Currency.FRENC);
   }
 
-  public Money(int amount, String currency) {
+  public Money(int amount, Currency currency) {
     this.amount = amount;
     this.currency = currency;
   }
@@ -22,12 +22,17 @@ public class Money implements Expression {
     return new Money(this.amount * times, this.currency);
   }
 
-  public Money plus(Money toAdd) {
-    return new Money(this.amount + toAdd.amount, this.currency);
+  public Expression plus(Money toAdd) {
+    return new Sum(this, toAdd);
   }
 
-  public String currency() {
+  public Currency currency() {
     return this.currency;
+  }
+
+  @Override
+  public Money reduce(Currency currency) {
+    return this;
   }
 
   @Override
