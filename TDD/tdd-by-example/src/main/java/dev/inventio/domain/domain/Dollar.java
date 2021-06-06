@@ -12,10 +12,6 @@ public class Dollar {
     return new Dollar(this.amount * times);
   }
 
-  public int getAmount() {
-    return amount;
-  }
-
   @Override
   public boolean equals(Object presented) {
 
