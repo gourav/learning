@@ -56,4 +56,14 @@ public class MoneyTest {
     assertNotEquals(Money.franc(5), Money.dollar(5));
   }
 
+  @Test
+  void given_Dollar5_currency_shouldBeUsd() {
+    assertEquals(Money.dollar(5).currency(), "USD");
+  }
+
+  @Test
+  void given_Frac5_currency_shouldBeFrc() {
+    assertEquals(Money.franc(5).currency(), "CHF");
+  }
+
 }

@@ -1,13 +1,17 @@
 package dev.inventio.domain.domain;
 
-class Dollar extends Money{
+class Dollar extends Money {
 
-  Dollar(int amount) {
-    this.amount = amount;
+  Dollar(int amount, String currency) {
+    super(amount, currency);
   }
 
   public Money times(int times) {
-    return new Dollar(this.amount * times);
+    return Money.dollar(this.amount * times);
   }
 
+  @Override
+  public String currency() {
+    return currency;
+  }
 }
